@@ -1,5 +1,7 @@
 package com.example.quartz.job;
 
+import java.lang.reflect.Method;
+
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -8,6 +10,8 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+
+import com.example.quartz.util.SpringUtils;
 
 @DisallowConcurrentExecution
 public class QuartzJob extends QuartzJobBean {
@@ -18,15 +22,16 @@ public class QuartzJob extends QuartzJobBean {
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 		JobDetail jobDetail = context.getJobDetail();
 		JobDataMap jobDataMap = jobDetail.getJobDataMap();
-		String service = jobDataMap.getString("service");
-		String method = jobDataMap.getString("method");
-		logger.info("开始执行定时任务{}.{}...", service, method);
-		// TODO
-		
+		String serviceStr = jobDataMap.getString("service");
+		String methodStr = jobDataMap.getString("method");
+		logger.info("开始执行定时任务{}.{}...", serviceStr, methodStr);
+		// 通过反射方式调用配置的service.method
 		try {
-			Thread.sleep(2*60*1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			Object target = SpringUtils.getBean(serviceStr);
+			Method method = target.getClass().getMethod(methodStr);
+			method.invoke(target);
+		} catch (Exception e) {
+			logger.info("执行定时任务异常:{}", e.getMessage());
 			e.printStackTrace();
 		}
 	}
