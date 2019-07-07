@@ -9,6 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
@@ -20,6 +21,7 @@ import com.example.quartz.util.SpringUtils;
 
 @Configuration
 @EnableConfigurationProperties(QuartzJobProperties.class)
+@AutoConfigureAfter(DruidConfig.class)
 public class QuartzJobConfig implements InitializingBean {
 
 	private static Logger logger = LoggerFactory.getLogger(QuartzJobConfig.class);
@@ -35,7 +37,7 @@ public class QuartzJobConfig implements InitializingBean {
 		String jobDetailPrefix = "JOB";
 		String cronTriggerPrefix = "Trigger";
 		for (QuartzJobBean job : items) {
-			logger.info("初始化{}...{}", JsonUtil.toJsonStr(job));
+			logger.info("初始化{}...", JsonUtil.toJsonStr(job));
 			// jobDetailFactoryBean
 			RootBeanDefinition jobDetailFactoryBeanDefinition = new RootBeanDefinition();
 			jobDetailFactoryBeanDefinition.setBeanClass(JobDetailFactoryBean.class);
@@ -43,18 +45,24 @@ public class QuartzJobConfig implements InitializingBean {
 			JobDataMap jobDataMap = new JobDataMap();
 			jobDataMap.put("service", job.getService());
 			jobDataMap.put("method", job.getMethod());
+			jobDetailFactoryBeanDefinition.getPropertyValues().add("name", job.getName());
+			jobDetailFactoryBeanDefinition.getPropertyValues().add("group", job.getGroup());
+			jobDetailFactoryBeanDefinition.getPropertyValues().add("jobClass", QuartzJob.class);
 			jobDetailFactoryBeanDefinition.getPropertyValues().add("jobDataMap", jobDataMap);
 			jobDetailFactoryBeanDefinition.getPropertyValues().add("durability", true);
-			jobDetailFactoryBeanDefinition.getPropertyValues().add("jobClass", QuartzJob.class);
 			beanDefinitionRegistry.registerBeanDefinition(job.getName() + jobDetailPrefix,
 					jobDetailFactoryBeanDefinition);
 			// cronTriggerFactoryBean
 			RootBeanDefinition cronTriggerFactoryBeanDefinition = new RootBeanDefinition();
 			cronTriggerFactoryBeanDefinition.setBeanClass(CronTriggerFactoryBean.class);
 			cronTriggerFactoryBeanDefinition.setLazyInit(true);
+			cronTriggerFactoryBeanDefinition.getPropertyValues().add("name",job.getName());
+			cronTriggerFactoryBeanDefinition.getPropertyValues().add("group",job.getGroup());
 			cronTriggerFactoryBeanDefinition.getPropertyValues().add("jobDetail",
 					SpringUtils.getBean(job.getName() + jobDetailPrefix));
 			cronTriggerFactoryBeanDefinition.getPropertyValues().add("cronExpression", job.getCronExpression());
+			
+			cronTriggerFactoryBeanDefinition.getPropertyValues().add("misfireInstruction",job.getMisfireInstruction());
 			beanDefinitionRegistry.registerBeanDefinition(job.getName() + cronTriggerPrefix,
 					cronTriggerFactoryBeanDefinition);
 		}

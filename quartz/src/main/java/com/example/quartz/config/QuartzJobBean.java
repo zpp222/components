@@ -10,6 +10,10 @@ public class QuartzJobBean implements Serializable {
 	private String service;
 	private String method;
 	private String cronExpression;
+	// 0-MISFIRE_INSTRUCTION_SMART_POLICY (default)
+	// 1-MISFIRE_INSTRUCTION_FIRE_ONCE_NOW
+	// 2-MISFIRE_INSTRUCTION_DO_NOTHING
+	private int misfireInstruction;
 
 	public String getGroup() {
 		return group;
@@ -49,6 +53,14 @@ public class QuartzJobBean implements Serializable {
 
 	public void setCronExpression(String cronExpression) {
 		this.cronExpression = cronExpression;
+	}
+
+	public int getMisfireInstruction() {
+		return misfireInstruction;
+	}
+
+	public void setMisfireInstruction(int misfireInstruction) {
+		this.misfireInstruction = misfireInstruction;
 	}
 
 }
