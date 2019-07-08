@@ -81,11 +81,13 @@ public class QuartzJobConfig {
 	}
 
 	private void jobDetailCustomize(BeanDefinition jobDetailFactoryBeanDefinition) {
-		this.customizers.getIfAvailable().jobDetailCustomize(jobDetailFactoryBeanDefinition);
+		this.customizers.orderedStream()
+				.forEach((customizer) -> customizer.jobDetailCustomize(jobDetailFactoryBeanDefinition));
 	}
 
 	private void cronTriggerCustomize(BeanDefinition cronTriggerFactoryBeanDefinition) {
-		this.customizers.getIfAvailable().cronTriggerCustomize(cronTriggerFactoryBeanDefinition);
+		this.customizers.orderedStream()
+				.forEach((customizer) -> customizer.cronTriggerCustomize(cronTriggerFactoryBeanDefinition));
 	}
 
 }
