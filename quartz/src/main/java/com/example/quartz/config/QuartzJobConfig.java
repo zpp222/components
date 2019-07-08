@@ -5,14 +5,15 @@ import java.util.List;
 import org.quartz.JobDataMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
@@ -25,16 +26,21 @@ import com.example.quartz.util.SpringUtils;
 @Configuration
 @ConditionalOnClass({ JobDetailFactoryBean.class, CronTriggerFactoryBean.class })
 @EnableConfigurationProperties(QuartzJobProperties.class)
-@AutoConfigureBefore({QuartzAutoConfiguration.class})
-public class QuartzJobConfig implements InitializingBean {
+@AutoConfigureBefore({ QuartzAutoConfiguration.class })
+public class QuartzJobConfig {
 
 	private static Logger logger = LoggerFactory.getLogger(QuartzJobConfig.class);
 
-	@Autowired
-	QuartzJobProperties quartzJobProperties;
+	private final ObjectProvider<QuartzJobCustomizer> customizers;
+	private final QuartzJobProperties quartzJobProperties;
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
+	public QuartzJobConfig(ObjectProvider<QuartzJobCustomizer> customizers, QuartzJobProperties quartzJobProperties) {
+		this.customizers = customizers;
+		this.quartzJobProperties = quartzJobProperties;
+	}
+
+	@Bean
+	public QuartzJobConfig init() throws Exception {
 		BeanDefinitionRegistry beanDefinitionRegistry = SpringUtils.getBeanDefinitionRegistry();
 		List<QuartzJobBean> items = quartzJobProperties.getItems();
 		logger.info("items {}", JsonUtil.toJsonStr(items));
@@ -54,6 +60,7 @@ public class QuartzJobConfig implements InitializingBean {
 			jobDetailFactoryBeanDefinition.getPropertyValues().add("jobClass", QuartzJob.class);
 			jobDetailFactoryBeanDefinition.getPropertyValues().add("jobDataMap", jobDataMap);
 			jobDetailFactoryBeanDefinition.getPropertyValues().add("durability", true);
+			jobDetailCustomize(jobDetailFactoryBeanDefinition); // 扩展接口
 			beanDefinitionRegistry.registerBeanDefinition(job.getName() + jobDetailPrefix,
 					jobDetailFactoryBeanDefinition);
 			// cronTriggerFactoryBean
@@ -65,12 +72,20 @@ public class QuartzJobConfig implements InitializingBean {
 			cronTriggerFactoryBeanDefinition.getPropertyValues().add("jobDetail",
 					SpringUtils.getBean(job.getName() + jobDetailPrefix));
 			cronTriggerFactoryBeanDefinition.getPropertyValues().add("cronExpression", job.getCronExpression());
-
 			cronTriggerFactoryBeanDefinition.getPropertyValues().add("misfireInstruction", job.getMisfireInstruction());
+			cronTriggerCustomize(cronTriggerFactoryBeanDefinition); // 扩展接口
 			beanDefinitionRegistry.registerBeanDefinition(job.getName() + cronTriggerPrefix,
 					cronTriggerFactoryBeanDefinition);
 		}
+		return null;
+	}
 
+	private void jobDetailCustomize(BeanDefinition jobDetailFactoryBeanDefinition) {
+		this.customizers.getIfAvailable().jobDetailCustomize(jobDetailFactoryBeanDefinition);
+	}
+
+	private void cronTriggerCustomize(BeanDefinition cronTriggerFactoryBeanDefinition) {
+		this.customizers.getIfAvailable().cronTriggerCustomize(cronTriggerFactoryBeanDefinition);
 	}
 
 }
