@@ -9,7 +9,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
@@ -23,6 +25,7 @@ import com.example.quartz.util.SpringUtils;
 @Configuration
 @ConditionalOnClass({ JobDetailFactoryBean.class, CronTriggerFactoryBean.class })
 @EnableConfigurationProperties(QuartzJobProperties.class)
+@AutoConfigureBefore({QuartzAutoConfiguration.class})
 public class QuartzJobConfig implements InitializingBean {
 
 	private static Logger logger = LoggerFactory.getLogger(QuartzJobConfig.class);

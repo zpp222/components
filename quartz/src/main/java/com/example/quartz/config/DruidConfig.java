@@ -3,7 +3,10 @@ package com.example.quartz.config;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +15,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 
 @Configuration
 @EnableConfigurationProperties(DruidProperties.class)
+@AutoConfigureBefore({ QuartzAutoConfiguration.class })
 public class DruidConfig {
 
 	@Autowired
@@ -19,6 +23,7 @@ public class DruidConfig {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnClass({ DruidDataSource.class })
 	public DataSource dataSource() {
 		DruidDataSource dataSource = new DruidDataSource();
 		dataSource.setDriverClassName(druidProperties.getDriverClassName());
