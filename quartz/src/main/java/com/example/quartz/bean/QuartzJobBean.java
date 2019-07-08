@@ -1,4 +1,4 @@
-package com.example.quartz.config;
+package com.example.quartz.bean;
 
 import java.io.Serializable;
 

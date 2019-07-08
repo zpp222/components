@@ -9,19 +9,20 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 
+import com.example.quartz.bean.QuartzJobBean;
 import com.example.quartz.job.QuartzJob;
 import com.example.quartz.util.JsonUtil;
 import com.example.quartz.util.SpringUtils;
 
 @Configuration
+@ConditionalOnClass({ JobDetailFactoryBean.class, CronTriggerFactoryBean.class })
 @EnableConfigurationProperties(QuartzJobProperties.class)
-@AutoConfigureAfter(DruidConfig.class)
 public class QuartzJobConfig implements InitializingBean {
 
 	private static Logger logger = LoggerFactory.getLogger(QuartzJobConfig.class);
@@ -56,13 +57,13 @@ public class QuartzJobConfig implements InitializingBean {
 			RootBeanDefinition cronTriggerFactoryBeanDefinition = new RootBeanDefinition();
 			cronTriggerFactoryBeanDefinition.setBeanClass(CronTriggerFactoryBean.class);
 			cronTriggerFactoryBeanDefinition.setLazyInit(true);
-			cronTriggerFactoryBeanDefinition.getPropertyValues().add("name",job.getName());
-			cronTriggerFactoryBeanDefinition.getPropertyValues().add("group",job.getGroup());
+			cronTriggerFactoryBeanDefinition.getPropertyValues().add("name", job.getName());
+			cronTriggerFactoryBeanDefinition.getPropertyValues().add("group", job.getGroup());
 			cronTriggerFactoryBeanDefinition.getPropertyValues().add("jobDetail",
 					SpringUtils.getBean(job.getName() + jobDetailPrefix));
 			cronTriggerFactoryBeanDefinition.getPropertyValues().add("cronExpression", job.getCronExpression());
-			
-			cronTriggerFactoryBeanDefinition.getPropertyValues().add("misfireInstruction",job.getMisfireInstruction());
+
+			cronTriggerFactoryBeanDefinition.getPropertyValues().add("misfireInstruction", job.getMisfireInstruction());
 			beanDefinitionRegistry.registerBeanDefinition(job.getName() + cronTriggerPrefix,
 					cronTriggerFactoryBeanDefinition);
 		}

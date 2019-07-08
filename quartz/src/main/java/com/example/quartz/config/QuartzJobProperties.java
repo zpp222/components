@@ -6,6 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
+import com.example.quartz.bean.QuartzJobBean;
+
 @Component
 @PropertySource(value = { "classpath:quartzJobs.properties" }, ignoreResourceNotFound = true)
 @ConfigurationProperties(prefix = "qrtz.jobs")
