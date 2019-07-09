@@ -2,7 +2,9 @@ package com.example.quartz.config;
 
 import java.util.List;
 
+import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -25,7 +27,7 @@ import com.example.quartz.util.JsonUtil;
 import com.example.quartz.util.SpringUtils;
 
 @Configuration
-@ConditionalOnClass({ JobDetailFactoryBean.class, CronTriggerFactoryBean.class })
+@ConditionalOnClass({ JobDetail.class, CronTrigger.class })
 @EnableConfigurationProperties(QuartzJobProperties.class)
 @AutoConfigureBefore({ QuartzAutoConfiguration.class })
 @ComponentScan(basePackages={"com.example.quartz"})
