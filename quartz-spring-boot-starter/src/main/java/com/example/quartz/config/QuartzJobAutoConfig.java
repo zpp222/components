@@ -27,20 +27,20 @@ import com.example.quartz.util.SpringUtils;
 @ConditionalOnClass({ JobDetailFactoryBean.class, CronTriggerFactoryBean.class })
 @EnableConfigurationProperties(QuartzJobProperties.class)
 @AutoConfigureBefore({ QuartzAutoConfiguration.class })
-public class QuartzJobConfig {
+public class QuartzJobAutoConfig {
 
-	private static Logger logger = LoggerFactory.getLogger(QuartzJobConfig.class);
+	private static Logger logger = LoggerFactory.getLogger(QuartzJobAutoConfig.class);
 
 	private final ObjectProvider<QuartzJobCustomizer> customizers;
 	private final QuartzJobProperties quartzJobProperties;
 
-	public QuartzJobConfig(ObjectProvider<QuartzJobCustomizer> customizers, QuartzJobProperties quartzJobProperties) {
+	public QuartzJobAutoConfig(ObjectProvider<QuartzJobCustomizer> customizers, QuartzJobProperties quartzJobProperties) {
 		this.customizers = customizers;
 		this.quartzJobProperties = quartzJobProperties;
 	}
 
 	@Bean
-	public QuartzJobConfig init() throws Exception {
+	public QuartzJobAutoConfig init() throws Exception {
 		BeanDefinitionRegistry beanDefinitionRegistry = SpringUtils.getBeanDefinitionRegistry();
 		List<QuartzJobBean> items = quartzJobProperties.getItems();
 		logger.info("items {}", JsonUtil.toJsonStr(items));
