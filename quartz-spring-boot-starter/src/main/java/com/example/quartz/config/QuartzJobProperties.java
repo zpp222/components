@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import com.example.quartz.bean.QuartzJobBean;
 
 @Component
-@PropertySource(value = { "classpath:quartzJobs.properties" }, ignoreResourceNotFound = true)
+@PropertySource(value = { "classpath:quartzJobs.properties" }, ignoreResourceNotFound = false)
 @ConfigurationProperties(prefix = "qrtz.jobs")
 public class QuartzJobProperties {
 
