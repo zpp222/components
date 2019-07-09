@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
@@ -27,6 +28,7 @@ import com.example.quartz.util.SpringUtils;
 @ConditionalOnClass({ JobDetailFactoryBean.class, CronTriggerFactoryBean.class })
 @EnableConfigurationProperties(QuartzJobProperties.class)
 @AutoConfigureBefore({ QuartzAutoConfiguration.class })
+@ComponentScan(basePackages={"com.example.quartz"})
 public class QuartzJobAutoConfig {
 
 	private static Logger logger = LoggerFactory.getLogger(QuartzJobAutoConfig.class);
