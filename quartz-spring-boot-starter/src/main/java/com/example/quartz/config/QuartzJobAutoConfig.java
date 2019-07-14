@@ -58,7 +58,6 @@ public class QuartzJobAutoConfig {
 			jobDetailFactoryBeanDefinition.setLazyInit(true);
 			JobDataMap jobDataMap = new JobDataMap();
 			jobDataMap.put("service", job.getService());
-			jobDataMap.put("method", job.getMethod());
 			jobDetailFactoryBeanDefinition.getPropertyValues().add("name", job.getName());
 			jobDetailFactoryBeanDefinition.getPropertyValues().add("group", job.getGroup());
 			jobDetailFactoryBeanDefinition.getPropertyValues().add("jobClass", QuartzJob.class);

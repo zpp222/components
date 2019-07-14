@@ -3,11 +3,9 @@
 qrtz.jobs.items[0].name=job1
 qrtz.jobs.items[0].group=group1
 qrtz.jobs.items[0].service=service1
-qrtz.jobs.items[0].method=method1
 qrtz.jobs.items[0].cronExpression=0 */1 * * * ?
 #job2
 qrtz.jobs.items[1].name=job2
 qrtz.jobs.items[1].group=group2
 qrtz.jobs.items[1].service=service2
-qrtz.jobs.items[1].method=method2
 qrtz.jobs.items[1].cronExpression=0 */1 * * * ?

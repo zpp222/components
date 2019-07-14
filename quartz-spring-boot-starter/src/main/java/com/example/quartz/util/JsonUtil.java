@@ -12,7 +12,6 @@ public class JsonUtil {
 		try {
 			result = mapper.writeValueAsString(value);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;

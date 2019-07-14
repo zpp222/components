@@ -33,8 +33,12 @@ public class SpringUtils implements BeanDefinitionRegistryPostProcessor, BeanFac
 		SpringUtils.beanFactory = beanFactory;
 	}
 
-	public static Object getBean(String name){
+	public static Object getBean(String name) {
 		return beanFactory.getBean(name);
+	}
+
+	public static <T> T getBean(String name, Class<T> claz) {
+		return beanFactory.getBean(name, claz);
 	}
 
 }
