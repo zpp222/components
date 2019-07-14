@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import com.example.quartz.util.SpringUtils;
+import com.example.quartz.util.StringConstants;
 
 @DisallowConcurrentExecution
 public class QuartzJob extends QuartzJobBean {
@@ -20,7 +21,7 @@ public class QuartzJob extends QuartzJobBean {
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 		JobDetail jobDetail = context.getJobDetail();
 		JobDataMap jobDataMap = jobDetail.getJobDataMap();
-		String serviceStr = jobDataMap.getString("service");
+		String serviceStr = jobDataMap.getString(StringConstants.SERVICE_STR);
 		logger.info("开始执行定时任务{}...", serviceStr);
 		try {
 			QuartzJobService service = SpringUtils.getBean(serviceStr, QuartzJobService.class);

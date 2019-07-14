@@ -25,12 +25,13 @@ import com.example.quartz.bean.QuartzJobBean;
 import com.example.quartz.job.QuartzJob;
 import com.example.quartz.util.JsonUtil;
 import com.example.quartz.util.SpringUtils;
+import com.example.quartz.util.StringConstants;
 
 @Configuration
 @ConditionalOnClass({ JobDetail.class, CronTrigger.class })
 @EnableConfigurationProperties(QuartzJobProperties.class)
 @AutoConfigureBefore({ QuartzAutoConfiguration.class })
-@ComponentScan(basePackages={"com.example.quartz"})
+@ComponentScan(basePackages = { "com.example.quartz" })
 public class QuartzJobAutoConfig {
 
 	private static Logger logger = LoggerFactory.getLogger(QuartzJobAutoConfig.class);
@@ -38,7 +39,8 @@ public class QuartzJobAutoConfig {
 	private final ObjectProvider<QuartzJobCustomizer> customizers;
 	private final QuartzJobProperties quartzJobProperties;
 
-	public QuartzJobAutoConfig(ObjectProvider<QuartzJobCustomizer> customizers, QuartzJobProperties quartzJobProperties) {
+	public QuartzJobAutoConfig(ObjectProvider<QuartzJobCustomizer> customizers,
+			QuartzJobProperties quartzJobProperties) {
 		this.customizers = customizers;
 		this.quartzJobProperties = quartzJobProperties;
 	}
@@ -57,7 +59,7 @@ public class QuartzJobAutoConfig {
 			jobDetailFactoryBeanDefinition.setBeanClass(JobDetailFactoryBean.class);
 			jobDetailFactoryBeanDefinition.setLazyInit(true);
 			JobDataMap jobDataMap = new JobDataMap();
-			jobDataMap.put("service", job.getService());
+			jobDataMap.put(StringConstants.SERVICE_STR, job.getService());
 			jobDetailFactoryBeanDefinition.getPropertyValues().add("name", job.getName());
 			jobDetailFactoryBeanDefinition.getPropertyValues().add("group", job.getGroup());
 			jobDetailFactoryBeanDefinition.getPropertyValues().add("jobClass", QuartzJob.class);
